@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="ExternalProjectImportWizard">
+		<item key="WizardProjectsImportPage.STORE_NESTED_PROJECTS" value="false"/>
+		<item key="WizardProjectsImportPage.STORE_COPY_PROJECT_ID" value="false"/>
+		<item key="WizardProjectsImportPage.STORE_ARCHIVE_SELECTED" value="false"/>
+		<list key="WizardProjectsImportPage.STORE_DIRECTORIES">
+			<item value="C:\MOJI PODACI\Skola\DRUGA GODINA\Informaciona bezbednost\Projekat\IB_Project_Shell"/>
+			<item value="C:\MOJI PODACI\Skola\DRUGA GODINA\Informaciona bezbednost\Projekat\Mail Client V2"/>
+		</list>
+		<list key="WizardProjectsImportPage.STORE_ARCHIVES">
+			<item value=""/>
+		</list>
+	</section>
+	<section name="org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea">
+		<item key="OUTSIDE_LOCATION" value="C:\MOJI PODACI\Skola\DRUGA GODINA\INFORMACIONA BEZBEDNOST PROJEKAT\Mail Client V2"/>
+	</section>
+</section>

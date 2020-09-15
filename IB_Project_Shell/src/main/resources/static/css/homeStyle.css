@@ -1,0 +1,153 @@
+*{
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+html,
+body{
+    height: 100%;
+}
+
+body { 
+    background-color: #121212;
+    font-family: "Roboto";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#content{
+    display: flex;
+    background-color: #121212;
+    height: 100vh;
+    color: white;
+  }
+  
+  #header_navigation_container{
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #242424;
+  }
+  
+  #header_navigation{
+    height: 56px;
+    padding: 0 1px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  
+  #profile_icon{
+    padding: 0 26px 0 20px;
+    cursor: pointer;
+    padding-left: 122px;
+  }
+  
+  #profile_info{
+    display: none;
+    position: absolute;
+    background-color: #242424;
+    border: 1px solid #606060;
+    top: 58px;
+    right: 10px;
+    width: 356px;
+    height: 433px;
+    text-align: center;
+    padding: 15px 0 15px 0;
+  }
+  
+  #profile_info p{
+    color: white;
+    font-weight: 600;
+    font-size: 18px;
+  }
+  
+  #profileIconInfo{
+    margin: 10px 100px 50px 100px;
+  }
+
+  .btn-danger{
+      border-radius: 0px;
+      background-color: rgb(237, 28, 36);
+      margin: 30px;
+  }
+
+  #manageUsers{
+      display: none;
+      padding: 30px;
+      padding-top: 86px;
+      width: 100%;
+      text-align: center;
+  }
+
+  #searchbox_container{
+    width: 100%;
+    height: 30px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+  }
+
+  #searchbox_form{
+    width: 100%;
+    height: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+  }
+  
+  #searchbox_form input[type="text"]{
+    width: 100%;
+    background-color: #121212;
+    color: white;
+    border: 1px solid #606060;
+    border-radius: 2px 0 0 2px;
+    padding-left: 10px;
+  }
+  
+  #searchbox_form input[type="text"]::placeholder {
+    color: #606060;
+  }
+  
+  i{
+    color: white;
+    pointer-events:none;
+  }
+  
+  #searchbox_form button{
+    border-radius: 0 2px 2px 0;
+    border: 1px solid #606060;
+    background-color: #303030;
+    height: 30px;
+    margin-left: 2px;
+    color: white;
+    padding: 0 20px;
+  }
+
+  .table-dark{
+    text-align: left;
+    background-color: #121212;
+  }
+
+  table tbody tr{
+    cursor: pointer;
+  }
+
+  table tbody tr:hover{
+    outline: none;
+    box-shadow: inset 1px 0 0 rgba(255,255,255,0.2), inset -1px 0 0 rgba(255,255,255,0.2), 0 0 4px 0 rgba(95,99,104,.6), 0 0 6px 2px rgba(95,99,104,.6);
+  }
+
+  #regularUserDiv{
+    display: none;
+    padding: 30px;
+    padding-top: 86px;
+    width: 100%;
+    text-align: center;
+}
+
+#downloadJksButton,#userDownloadJks{
+  display: none;
+}

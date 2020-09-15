@@ -1,0 +1,152 @@
+package ib.project.rest;
+
+import java.security.KeyPair;
+import java.security.KeyStore;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import ib.project.dto.LoginDTO;
+import ib.project.model.Authority;
+import ib.project.model.User;
+import ib.project.security.CertificateGenerator;
+import ib.project.security.KeyStoreReader;
+import ib.project.security.KeyStoreWriter;
+import ib.project.security.TokenUtils;
+import ib.project.service.AuthorityServiceInterface;
+import ib.project.service.UserService;
+import ib.project.service.UserServiceInterface;
+
+@RestController
+public class UserController {
+	
+	@Autowired
+	AuthenticationManager authenticationManager;
+	
+	@Autowired
+	private UserDetailsService userDetailsService;
+	
+	@Autowired
+	private UserServiceInterface userService;
+	
+	@Autowired
+	private AuthorityServiceInterface authorityService;
+	
+	@Autowired
+	TokenUtils tokenUtils; 
+	
+	private static final String KEY_STORE_FILE = "./data/ib-web.jks";
+	private static final String KEY_STORE_PASS = "informacionaBezbednost";
+	
+	private static KeyStoreReader keyStoreReader = new KeyStoreReader();
+	private static KeyStoreWriter keyStoreWriter = new KeyStoreWriter();
+	private static CertificateGenerator certificateGenerator = new CertificateGenerator();
+	
+	@RequestMapping(value = "/api/login", method = RequestMethod.POST)
+	public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
+        try {
+			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+					loginDTO.getUsername(), loginDTO.getPassword());
+
+			Authentication authentication = authenticationManager.authenticate(token);
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+			UserDetails details = userDetailsService.loadUserByUsername(loginDTO.getUsername());
+			User loggedUser = userService.findByEmail(loginDTO.getUsername());
+			HashMap<String,Object> retVal = new HashMap<String,Object>();
+			retVal.put("token", tokenUtils.generateToken(details));
+			retVal.put("email", loggedUser.getEmail());
+			retVal.put("active_status", loggedUser.isActive());
+			retVal.put("role", loggedUser.getAuthorities());
+            return ResponseEntity.ok(retVal);
+        } catch (Exception ex) {
+            return new ResponseEntity<String>("Invalid login", HttpStatus.UNAUTHORIZED);
+        }
+	}
+	
+	@PostMapping(path="/api/registration")
+	public ResponseEntity<User> registrationUser(@RequestParam String email, @RequestParam String password) {
+		Authority auth = authorityService.findByName("Regular");
+		User user = new User();
+		User checkUser = userService.findByEmail(email);
+		if (checkUser == null) {
+			user.setActive(false);
+			List<Authority> userAuthorities = new ArrayList<Authority>();
+			userAuthorities.add(auth);
+			user.setAuthorities(userAuthorities);
+			user.setCertificate("");
+			user.setEmail(email);
+			user.setPassword(password);
+			
+			userService.save(user);
+			return new ResponseEntity<User>(user,HttpStatus.CREATED);
+		}else {
+			System.out.println("Email already exists in database!");
+			return new ResponseEntity<>(HttpStatus.CONFLICT);
+		}
+	}
+	
+	@GetMapping(path="/api/jks")
+	public ResponseEntity<?> generateJSK(@RequestParam String email){
+		
+		User user = userService.findByEmail(email);
+		
+		if(user == null)
+			return new ResponseEntity<>("Wrong username", HttpStatus.BAD_REQUEST);
+		
+		// ucitavanje KeyStore fajla
+		// prosledjujemo null kao prvi parametar jer fajl trenutno ne postoji
+		KeyStore keyStore = keyStoreWriter.loadKeyStore(null, KEY_STORE_PASS.toCharArray());
+		
+		// cuvanje fajla na disku
+		keyStoreWriter.saveKeyStore(keyStore, KEY_STORE_FILE, KEY_STORE_PASS.toCharArray());
+		
+		// generisemo par kljuceva za seritifkat koji se generise
+		KeyPair keyPair = certificateGenerator.generateKeyPair();
+		
+		// generisemo Self-Signed sertifikat
+		X509Certificate certificate = certificateGenerator.generateSelfSignedCertificate(keyPair, email);
+		
+		// ucitavanje KeyStore fajla
+		keyStore = keyStoreWriter.loadKeyStore(KEY_STORE_FILE, KEY_STORE_PASS.toCharArray());
+		
+		// upisivanje u KeyStore, dodaju se kljuc i sertifikat
+		keyStoreWriter.addToKeyStore(keyStore, email, keyPair.getPrivate(), KEY_STORE_PASS.toCharArray(), certificate);
+		
+		// cuvanje izmena na disku
+		keyStoreWriter.saveKeyStore(keyStore, KEY_STORE_FILE, KEY_STORE_PASS.toCharArray());
+		
+		// postavljanje sertifikata useru i cuvanje izmena
+		user.setCertificate(KEY_STORE_FILE);
+		userService.save(user);
+		
+		// ispisivanje sertifikata na konzoli
+		CertificateGenerator.printCertificate(certificate);
+		
+		return new ResponseEntity<String>("", HttpStatus.OK);
+	}
+	
+	@GetMapping(path="/api/users")
+	public List<User> findAll() {
+		return userService.findAll();
+	}
+
+}
