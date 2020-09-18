@@ -26,11 +26,6 @@ public class DemoController {
 
 	@Value("${dataDir}")
 	private String DATA_DIR_PATH;
-	
-    /*@RequestMapping("/")
-    public String welcome() {
-        return "login";
-    }*/
 
 	@RequestMapping(value = "/api/demo", method = RequestMethod.POST)
 	public ResponseEntity<String> createAFileInResources() throws IOException {

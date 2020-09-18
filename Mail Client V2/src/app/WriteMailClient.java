@@ -149,14 +149,6 @@ public class WriteMailClient extends MailClient {
 	    	mainRootElement.setAttribute("to", to);
 	    	doc.appendChild(mainRootElement);
 	    	
-	    	/*Element fromNode = doc.createElement("from");
-	    	fromNode.appendChild(doc.createTextNode(from));
-	    	mainRootElement.appendChild(fromNode);
-	    	
-	    	Element toNode = doc.createElement("to");
-	    	toNode.appendChild(doc.createTextNode(to));
-	    	mainRootElement.appendChild(toNode);*/
-	    	
 	    	Element subjectNode = doc.createElement("subject");
 	    	subjectNode.appendChild(doc.createTextNode(subject));
 	    	mainRootElement.appendChild(subjectNode);

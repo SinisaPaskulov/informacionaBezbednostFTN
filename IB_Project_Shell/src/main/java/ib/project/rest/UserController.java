@@ -287,44 +287,5 @@ public class UserController {
 
 		return bytesArray;
 	}
-	
-	
-	/*
- 	@GetMapping(path="/api/userJKS")
-	public ResponseEntity<?> generateJSK(@RequestHeader("email") String email){
-		
-		User user = userService.findByEmail(email);
-		
-		if(user == null)
-			return new ResponseEntity<>("Wrong username", HttpStatus.BAD_REQUEST);
-		
-		// generisemo par kljuceva za seritifkat koji se generise
-		KeyPair keyPair = certificateGenerator.generateKeyPair();
-		
-		// generisemo Self-Signed sertifikat
-		X509Certificate certificate = certificateGenerator.generateSelfSignedCertificate(keyPair, email);
-		
-		// ucitavanje KeyStore fajla
-		// prosledjujemo null kao prvi parametar jer fajl trenutno ne postoji
-		KeyStore keyStore = keyStoreWriter.loadKeyStore(null, KEY_STORE_PASS.toCharArray());
-		
-		// upisivanje u KeyStore, dodaju se kljuc i sertifikat  //user.getPassword()
-		keyStoreWriter.addToKeyStore(keyStore, email, keyPair.getPrivate(), KEY_STORE_PASS.toCharArray(), certificate);
-		
-		String keyStorePath = "./data/" + email.substring(0,email.indexOf('@')) + ".jks";
-		
-		// cuvanje fajla na disku
-		keyStoreWriter.saveKeyStore(keyStore, keyStorePath, KEY_STORE_PASS.toCharArray());
-		
-		// postavljanje sertifikata useru i cuvanje izmena
-		user.setCertificate(keyStorePath);
-		userService.save(user);
-		
-		// ispisivanje sertifikata na konzoli
-		CertificateGenerator.printCertificate(certificate);
-		
-		return new ResponseEntity<String>("", HttpStatus.OK);
-	}
-	 * */
 
 }
